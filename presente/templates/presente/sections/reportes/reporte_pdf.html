@@ -1,0 +1,166 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 20mm 15mm;
+        }
+        body {
+            width: 170mm;
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.4;
+            color: #333;
+            box-sizing: border-box;
+        }
+        .header {
+            border-bottom: 2px solid gray;
+            padding-bottom: 10mm;
+            margin-bottom: 15mm;
+        }
+        .header-title {
+            text-align: center;
+            margin-bottom: 10mm;
+        }
+        .header-title h1 {
+            font-size: 22pt;
+            color: #2c5282;
+            margin: 0;
+            margin-bottom: 3mm;
+        }
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8mm;
+            font-size: 10pt;
+        }
+        .header-info-item {
+            margin-bottom: 2mm;
+        }
+        .header-info-label {
+            font-weight: bold;
+            color: #4a5568;
+        }
+        .content {
+            margin-bottom: 20mm;
+        }
+        .content h2 {
+            color: #2c5282;
+            font-size: 14pt;
+            margin-bottom: 5mm;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 2mm;
+        }
+        .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 10pt;
+        table-layout: fixed; /* Esto hace que respete los anchos definidos */
+    }
+    .info-table th, .info-table td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    /* Definimos el ancho de cada columna */
+    .info-table th:nth-child(1), /* # */
+    .info-table td:nth-child(1) {
+        width: 8mm;  /* Número más pequeño */
+    }
+    .info-table th:nth-child(2), /* Nombre */
+    .info-table td:nth-child(2) {
+        width: 40mm;  /* Nombres necesitan más espacio */
+    }
+    .info-table th:nth-child(3), /* Apellido */
+    .info-table td:nth-child(3) {
+        width: 40mm;  /* Apellidos también */
+    }
+    .info-table th:nth-child(4), /* Código */
+    .info-table td:nth-child(4) {
+        width: 25mm;  /* Códigos son más cortos */
+    }
+    .info-table th:nth-child(5), /* Cargo */
+    .info-table td:nth-child(5) {
+        width: 35mm;  /* Cargos necesitan espacio medio */
+    }
+    /* Ajustamos el padding */
+    .info-table th {
+        padding: 2mm;
+        text-align: left;
+        background-color: #f8fafc;
+        color: #2c5282;
+        font-weight: bold;
+        border: 1px solid #e2e8f0;
+    }
+    .info-table td {
+        padding: 2mm;
+        border: 1px solid #e2e8f0;
+    }
+    .pm{
+        font-weight: bold;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">
+            <h1>Reporte de Reunión</h1>
+            <h2>{{ reunion.titulo }}</h2>
+        </div>
+        <div class="header-info">
+            <div class="header-info-group">
+                <div class="header-info-item">
+                    <span class="header-info-label">Fecha:</span>
+                    <span>{{ reunion.fecha|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="header-info-item">
+                    <span class="header-info-label">Departamento:</span>
+                    <span>{{ reunion.departamento }}</span>
+                </div>
+            </div>
+            <div class="header-info-group">
+                <div class="header-info-item">
+                    <span class="header-info-label">Total Asistentes:</span>
+                    <span>{{ asistencias|length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>Lista de Asistencia</h2>
+        <table class="info-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Código</th>
+                    <th>Cargo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for asistencia in asistencias %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ asistencia.nombre }}</td>
+                    <td>{{ asistencia.apellido }}</td>
+                    <td>{{ asistencia.codigo }}</td>
+                    <td>{{ asistencia.cargo }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Reporte generado por <span class="pm">@Presente Management</span></p>
+    </div>
+</body>
+</html>

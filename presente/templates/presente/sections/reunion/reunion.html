@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Panel de Reuniones | Presente {% endblock title %}
+
+{% block content %}
+<main class="w-full min-h-[calc(100dvh-75px)] flex flex-col items-center justify-start px-4 py-6 gap-10">
+    
+    {# Sección 1: Formulario y Contenedor de reuniones previas #}
+    <section class="w-full max-w-6xl flex flex-col md:flex-row gap-6 items-center justify-center">
+        
+        {# Contenedor: Formulario #}
+        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-xl p-6">
+            <h1 class="text-3xl font-bold text-center mb-4 text-gray-800">Crear reunión</h1>
+            <form action="" method="post" class="flex flex-col gap-4">
+                {% csrf_token %}
+                <!-- Título -->
+                <div class="flex flex-col gap-1">
+                    <label for="titulo" class="text-sm font-medium text-gray-700">Título</label>
+                    <input 
+                        type="text" 
+                        name="titulo" 
+                        id="titulo"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none"
+                        placeholder="Ejemplo: Reunión mensual">
+                </div>
+                <!-- Descripción -->
+                <div class="flex flex-col gap-1">
+                    <label for="descripcion" class="text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea 
+                        name="descripcion" 
+                        id="descripcion"
+                        rows="3"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none"
+                        placeholder="Describe brevemente..."></textarea>
+                </div>
+                <!-- Fecha y hora -->
+                <div class="flex flex-col gap-1">
+                    <label for="datetime" class="text-sm font-medium text-gray-700">Fecha y hora</label>
+                    <input 
+                        type="datetime-local" 
+                        name="datetime" 
+                        id="datetime"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800">
+                </div>
+                <!-- Departamento -->
+                <div class="flex flex-col gap-1">
+                    <label for="departamento" class="text-sm font-medium text-gray-700">Departamento</label>
+                    <select 
+                        name="departamento" 
+                        id="departamento"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] bg-white text-gray-800">
+                        {% for depa in departamentos %}
+                        <option value="{{ depa.id }}">{{ depa.nombre_departamento }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <!-- Botón -->
+                <div class="flex justify-center">
+                    <button 
+                        type="submit"
+                        class="bg-[#F54B64] hover:bg-[#ff6d7a] text-white font-semibold py-2 px-6 rounded-xl transition w-full">
+                        Crear Reunión
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Contenedor visual o ilustración -->
+        <div class="hidden md:flex w-full md:w-[35%] h-[450px] bg-gradient-to-br from-[#F54B64] via-[#ff8a9f] to-[#F54B64] rounded-xl shadow-md items-center justify-center">
+            <!-- Puedes agregar ícono, texto, imagen o logo aquí -->
+            <p class="text-white text-xl font-semibold px-4 text-center">Organiza tus reuniones de forma eficiente</p>
+        </div>
+    </section>
+
+    <!-- Sección 2: Tabla -->
+    <section class="w-full max-w-6xl bg-white rounded-xl shadow-xl p-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Listado de reuniones</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-300 rounded-xl">
+                <thead class="bg-[#F54B64] text-white text-left">
+                    <tr>
+                        <th class="px-4 py-2">#</th>
+                        <th class="px-4 py-2">Título</th>
+                        <th class="px-4 py-2">Descripción</th>
+                        <th class="px-4 py-2">Fecha</th>
+                        <th class="px-4 py-2">Departamento</th>
+                        <th class="px-4 py-2 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="text-gray-700">
+                    {% for reunion in reuniones %}
+                    <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
+                        <td class="px-4 py-2">{{ forloop.counter }}</td>
+                        <td class="px-4 py-2">{{ reunion.titulo }}</td>
+                        <td class="px-4 py-2">{{ reunion.descripcion }}</td>
+                        <td class="px-4 py-2">{{ reunion.fecha }}</td>
+                        <td class="px-4 py-2">{{ reunion.departamento.nombre_departamento }}</td>
+                        <td class="px-4 py-2 text-center">
+                            <!-- Puedes agregar botones de editar/eliminar -->
+                            <a class="bg-[#F54B64] py-1 px-2 rounded-xl text-white text-sm"
+                                href="{% url 'mostrarDetalleReunion' reunion.id %}">
+                                Detalle
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="px-4 py-4 text-center text-gray-500">No hay reuniones registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="flex justify-center mt-4 space-x-2">
+            {% if reuniones.has_previous %}
+                <a href="?page={{ reuniones.previous_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Anterior</a>
+            {% endif %}
+
+            {% for num in reuniones.paginator.page_range %}
+                {% if reuniones.number == num %}
+                    <span class="px-3 py-1 bg-[#F54B64] text-white rounded">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}" class="px-3 py-1 border rounded hover:bg-gray-200">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if reuniones.has_next %}
+                <a href="?page={{ reuniones.next_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Siguiente</a>
+            {% endif %}
+        </div>
+    </section>
+</main>
+{% endblock %}

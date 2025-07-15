@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %} Iniciar Sesion | Presente {% endblock title %}
+
+{% block content %}
+
+    <main class="w-full min-h-[calc(100dvh-75px)] flex items-center justify-center px-4 py-6 gap-10">
+    
+    {# Sección 1: Formulario y Contenedor de reuniones previas #}
+    <section class="w-full max-w-6xl flex flex-col md:flex-row gap-6 items-center justify-center">
+        
+        {# Contenedor: Formulario #}
+        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-xl p-6">
+            <h1 class="text-3xl font-bold text-center mb-4 text-gray-800">Iniciar Sesion</h1>
+            <form action="" method="post" class="flex flex-col gap-4">
+                {% csrf_token %}
+                {# Codigo #}
+                <div class="flex flex-col gap-1">
+                    <label for="codigo" class="text-sm font-medium text-gray-700">Codigo</label>
+                    <input 
+                        type="text" 
+                        name="usuario" 
+                        id="codigo"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none"
+                        placeholder="@Examp2312">
+                </div>
+                {# contraseña #}
+                <div class="flex flex-col gap-1">
+                    <label for="contraseña" class="text-sm font-medium text-gray-700">Contraseña</label>
+                    <input
+                        type="password"
+                        name="contraseña" 
+                        id="contraseña"
+                        placeholder="**************"
+                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none">
+                </div>
+                <div class="flex justify-center">
+                    <button 
+                        type="submit"
+                        class="bg-[#F54B64] hover:bg-[#ff6d7a] text-white font-semibold py-2 px-6 rounded-xl transition w-full">
+                        Ingresar
+                    </button>
+                </div>
+                {# Resetear contraseña #}
+                <div class="flex items-center justify-center gap-1">
+                    <a href="" 
+                        id="datetime"
+                        class="py-2 px-3 text-gray-800 hover:underline">
+                        ¿Se te olvidó la contraseña?
+                    </a>
+                </div>
+            </form>
+        </div>
+    </section>
+
+</main>
+
+{% endblock content %}

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Management | Inicio {% endblock title %}
+
+{% block content %}
+<main>
+    <form action="" method="post">
+        {% csrf_token %}
+        <input type="text" name="primerNombre" id="primerNombre" placeholder="p nombre" required>
+        <input type="text" name="segundoNombre" id="segundoNombre" placeholder="s nombre">
+        <input type="text" name="primerApellido" id="primerApellido" placeholder="p apellido" required>
+        <input type="text" name="segundoApellido" id="segundoApellido" placeholder="s apellido">
+        <input type="number" name="documento" id="documento" placeholder="documento" required>
+        <input type="email" name="email" id="email" placeholder="email" required>
+        <input type="number" name="telefono" id="telefono" placeholder="numero" required>
+        <input type="date" name="fecha_contratacion" id="fecha_contratacion" placeholder="fecha contratacion" required>
+        <select name="departamento_id" id="departamento_id" required>
+            {% for depa in departamentos %}
+            <option value="{{ depa.id }}">{{ depa.nombre_departamento }}</option>
+            {% endfor %}
+        </select>
+        <select name="cargo_id" id="cargo_id">
+            {% for cargo in cargos %}
+            <option value="{{ cargo.id }}">{{ cargo.cargo }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">ENVIAR</button>
+    </form>
+</main>
+{% endblock %}

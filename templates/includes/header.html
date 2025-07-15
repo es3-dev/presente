@@ -1,0 +1,97 @@
+{% load static %}
+
+<header class="w-full h-auto py-2 px-4 md:h-[75px] flex flex-col md:flex-row items-center justify-center bg-gradient-to-r from-[#1B1B1B] via-[#323232] to-[#1B1B1B] gap-y-2">
+    
+    {% if tipo_header == 'presenteSimple' %}
+        <div class="w-full md:w-auto flex items-center justify-center">
+            <a href="{% url 'indexPresente' %}">
+                <span class="bg-gradient-to-r from-[#F54B64] to-[#F78361] bg-clip-text text-2xl md:text-3xl text-transparent font-bold">Presente</span>
+                <span class="bg-white bg-clip-text text-transparent font-semibold text-2xl md:text-3xl">Management</span>
+            </a>
+        </div>
+    
+    {% elif tipo_header == 'presenteCompleto' %}
+        {# Nombre #}
+        <div class="w-full md:w-[25%] flex items-center justify-center md:justify-start">
+            <a href="{% url 'indexPresente' %}">
+                <span class="bg-gradient-to-r from-[#F54B64] to-[#F78361] bg-clip-text text-2xl md:text-3xl text-transparent font-bold">Presente</span>
+                <span class="bg-white bg-clip-text text-transparent font-semibold text-2xl md:text-3xl">Management</span>
+            </a>
+        </div>
+
+        {# Navegacion #}
+        <nav class="hidden md:flex w-full md:w-[50%] items-center justify-center gap-4 md:gap-10">
+            <a href="{% url 'reunion' %}" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Reuniones</span>
+            </a>
+            <a href="{% url 'vistaReportes' %}" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Reportes</span>
+            </a>
+            <a href="#" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Administración</span>
+            </a>
+        </nav>
+
+        {# Usuario #}
+        <div class="w-full md:w-[25%] flex items-center justify-center md:justify-end">
+            <a href="#" class="flex items-center bg-[#F54B64] py-1 px-2.5 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">{{ user.username }}</span>
+            </a>
+        </div>
+
+    {% else %}
+        {# Nombre #}
+        <div class="w-full md:w-[25%] flex items-center justify-center md:justify-start">
+            <a href="{% url 'vistaIndexManagement' %}">
+                <span class="bg-gradient-to-r from-[#F54B64] to-[#F78361] bg-clip-text text-2xl md:text-3xl text-transparent font-bold">Management</span>
+            </a>
+        </div>
+
+        {# Navegacion #}
+        <nav class="hidden md:flex w-full md:w-[50%] items-center justify-center gap-4 md:gap-10">
+            <a href="{% url 'vistaEmpleados' %}" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Empleados</span>
+            </a>
+            <a href="#" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Reportes</span>
+            </a>
+            <a href="#" class="flex items-center gap-1 hover:bg-[#F54B64] py-1 px-2.5 rounded-xl transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+                </svg>
+                <span class="text-white font-semibold text-lg">Presente</span>
+            </a>
+        </nav>
+
+        {# Usuario #}
+        <div class="w-full md:w-[25%] flex items-center justify-center md:justify-end">
+            <a href="#" class="flex items-center bg-[#F54B64] py-1 px-2.5 rounded-xl">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-5 text-white font-semibold">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                </svg>
+                <span class="text-white font-semibold text-lg">{{ user.username }}</span>
+            </a>
+        </div>        
+    {% endif %}
+
+</header>
+
+{% block content %}{% endblock %}
