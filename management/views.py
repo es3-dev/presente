@@ -1,5 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.template.loader import render_to_string
+from weasyprint import HTML
+from django.conf import settings
+import tempfile
 from django.core.paginator import Paginator
+from django.db.models import Count
+from django.http import JsonResponse, HttpResponse
 from .models import Departamento, Cargo, Empleado
 
 # Create your views here.
@@ -64,20 +70,156 @@ def viewInfoEmpleado(request, empleado_id):
     })
 
 def viewDepartamentos(request):
-    departamentos = Departamento.objects.all()
-    if request.method == 'POST':
-        nombreDepartamento = request.POST['nombreDepartamento']
-        existe = Departamento.objects.filter(nombre_departamento=nombreDepartamento).exists()
-        if(existe):
-            msg_error = 'Lo siento, ya existe un departamento con ese nombre. Por favor verifica tu información.'
-            return render(request, 'management/sections/departamentos/departamentos.html')
-        Departamento.objects.create(
-            nombre_departamento=nombreDepartamento,
-        )
-        return redirect('vistaDepartamentos')
-    return render(request, 'management/sections/departamentos/departamentos.html', {
+    #Obtener la cantidad de empleados y cargos que tiene cada departamento
+    departamentos = Departamento.objects.annotate(
+        total_empleados = Count('empleado', distinct=True),
+        total_cargos = Count('cargo', distinct=True)
+    )
+
+    context = {
         'departamentos': departamentos,
-    })
+    }
+
+    #CRUD en DEPARTAMENTOS
+    #Crear un nuevo departamento
+    if request.method == 'POST':
+        if 'crearDepartamento' in request.POST:
+            nombreDepartamento = request.POST.get('crearDepartamento', '').strip()
+            existe = Departamento.objects.filter(nombre_departamento=nombreDepartamento).exists()
+            if(existe):
+                context['msg_error'] = 'Lo siento, ya existe un departamento con ese nombre. Por favor verifica tu información.'
+                return render(request, 'management/sections/departamentos/departamentos.html', context)
+            
+            Departamento.objects.create(
+                nombre_departamento=nombreDepartamento,
+            )
+            return redirect('vistaDepartamentos')
+        #Actualizar un nuevo departamento
+        elif 'actualizarDepartamento' in request.POST:
+            departamento_id = request.POST['seleccionDepartamento']
+            nuevo_nombre = request.POST.get('actualizarDepartamento', '').strip()
+            try:
+                departamento = Departamento.objects.get(id=departamento_id)
+                if Departamento.objects.filter(nombre_departamento=nuevo_nombre).exclude(id=departamento.id).exists():
+                    context = {
+                        'departamentos': departamentos,
+                        'msg_error': 'Ya existe un departamento con ese nombre'
+                    }
+                    return render(request, 'management/sections/departamentos/departamentos.html', context)
+                departamento.nombre_departamento = nuevo_nombre
+                departamento.save()
+                return redirect('vistaDepartamentos')
+            except Departamento.DoesNotExist:
+                context = {
+                    'departamentos': departamentos,
+                    'msg_error': 'El departamento seleccionado no existe.'
+                }
+                return render(request, 'management/sections/departamentos/departamentos.html', context)
+            
+            except Exception as e:
+                context = {
+                        'departamentos': departamentos,
+                        'msg_error': f'Ha ocurrido un error {str(e)}'
+                    }
+                return render(request, 'management/sections/departamentos/departamentos.html', context)
+        #Eliminar un departamento
+        elif 'selecElimDepartamento' in request.POST:
+            departamento_id = request.POST['selecElimDepartamento']
+            try:
+                departamento = Departamento.objects.get(id=departamento_id)
+                
+                # Verificar si tiene empleados
+                if departamento.empleado_set.exists():
+                    context['msg_error'] = 'No se puede eliminar el departamento porque tiene empleados asociados'
+                    return render(request, 'management/sections/departamentos/departamentos.html', context)
+                    
+                # Verificar si tiene cargos
+                if departamento.cargo_set.exists():
+                    context['msg_error'] = 'No se puede eliminar el departamento porque tiene cargos asociados'
+                    return render(request, 'management/sections/departamentos/departamentos.html', context)
+                    
+                # Si no tiene dependencias, eliminarlo
+                departamento.delete()
+                return redirect('vistaDepartamentos')
+                
+            except Departamento.DoesNotExist:
+                context['msg_error'] = 'El departamento no existe'
+                return render(request, 'management/sections/departamentos/departamentos.html', context)
+            except Exception as e:
+                context['msg_error'] = f'Error al eliminar el departamento: {str(e)}'
+                return render(request, 'management/sections/departamentos/departamentos.html', context)
+            
+    return render(request, 'management/sections/departamentos/departamentos.html', context)
+
+#Función para obtener la información de cada departamento, cantidad de empleados y cargos
+def obtenerInforDepartamento(request, departamento_id):
+    try:
+        departamento = Departamento.objects.get(id=departamento_id)
+        cargos = Cargo.objects.filter(departamento=departamento).annotate(
+            total_empleados=Count('empleado') 
+        )
+        
+        data = {
+            'nombre_departamento': departamento.nombre_departamento,
+            'cargos': [{
+                'id': cargo.id,
+                'nombre': cargo.cargo,
+                'total_empleados': cargo.total_empleados
+            } for cargo in cargos]
+        }
+        
+        return JsonResponse(data)
+    except Departamento.DoesNotExist:
+        return JsonResponse({'error': 'Departamento no encontrado'}, status=404)
+    except Exception as e:
+        print(f"Error: {str(e)}")
+        return JsonResponse({'error': 'Error interno del servidor'}, status=500)
+
+
+def generarReportePDF(request, departamento_id):
+    try:
+        # Obtener el departamento y sus datos relacionados
+        departamento = get_object_or_404(Departamento, id=departamento_id)
+        
+        # Obtener cargos con conteo de empleados
+        cargos = Cargo.objects.filter(departamento=departamento).annotate(
+            total_empleados=Count('empleado')
+        )
+        
+        # Obtener empleados del departamento
+        empleados = Empleado.objects.filter(departamento=departamento).select_related('cargo')
+        
+        # Calcular totales
+        total_empleados = empleados.count()
+        total_cargos = cargos.count()
+
+        # Preparar el contexto
+        context = {
+            'departamento': departamento,
+            'cargos': cargos,
+            'empleados': empleados,
+            'total_empleados': total_empleados,
+            'total_cargos': total_cargos
+        }
+
+        # Renderizar el template a HTML
+        html_string = render_to_string('management/sections/departamentos/informe_departamento.html', context)
+
+        # Crear la respuesta HTTP
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Informe_{departamento.nombre_departamento}_{departamento_id}.pdf"'
+
+        # Configurar weasyprint para usar fuentes del sistema
+        HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(
+            response,
+            presentational_hints=True
+        )
+
+        return response
+        
+    except Exception as e:
+        print(f"Error generando PDF: {str(e)}")
+        return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 
 def viewCargos(request):
     cargos = Cargo.objects.all()

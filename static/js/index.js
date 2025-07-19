@@ -41,7 +41,78 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     }
     
+    // Seleccionar todos los enlaces "Ver información completa"
+    const enlaces = document.querySelectorAll('.ver-info-departamento');
+    
+    enlaces.forEach(enlace => {
+        enlace.addEventListener('click', function(e) {
+            e.preventDefault();
+            const departamentoId = this.getAttribute('data-departamento-id');
+            
+            // Hacer la petición AJAX
+            fetch(`/management/departamento/${departamentoId}/info/`)
+                .then(response => response.json())
+                .then(data => {
+                    // Actualizar el contenido del aside
+                    document.querySelector('#nombreDepartamento').textContent = data.nombre_departamento;
+                    
+                    // Actualizar el botón de reporte
+                    const btnReporte = document.querySelector('#btnReporte');
+                    btnReporte.style.display = 'block';
+                    btnReporte.href = `/management/departamento/${departamentoId}/reporte/`;
+                    
+                    // Actualizar la tabla de cargos
+                    const tablaCargos = document.querySelector('#tablaCargos tbody');
+                    tablaCargos.innerHTML = ''; // Limpiar tabla actual
+                    
+                    data.cargos.forEach((cargo, index) => {
+                        tablaCargos.innerHTML += `
+                            <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
+                                <td class="px-3 py-2 text-center text-sm">${index + 1}</td>
+                                <td class="px-3 py-2 text-center text-sm">${cargo.nombre}</td>
+                                <td class="px-2 py-1 text-center text-sm">${cargo.total_empleados}</td>
+                            </tr>
+                        `;
+                    });
+                });
+        });
+    });
 
+
+    const btnCancelar = document.getElementById('btnCancelarAccion');
+    if (btnCancelar) {
+        btnCancelar.addEventListener('click', function(e) { 
+            e.preventDefault();
+            const inputEdicionDepartamento = document.getElementById('actualizarDepartamento');
+            if (inputEdicionDepartamento) {
+                inputEdicionDepartamento.value = '';
+            }
+        });
+    }
+
+    // Función para eliminar departamento
+    function eliminarDepartamento(departamentoId) {
+        if (confirm('¿Está seguro que desea eliminar este departamento?')) {
+            fetch(`/management/departamento/${departamentoId}/eliminar/`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Error al eliminar el departamento');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al eliminar el departamento');
+            });
+        }
+    }
 
     const btnConsultar = document.getElementById('btn-consultar')
     if (btnConsultar){

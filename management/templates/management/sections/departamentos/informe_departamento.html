@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de {{ departamento.nombre_departamento }} | Management</title>
+    <style>
+        :root {
+            --color-gray-50: #F9FAFB;
+            --color-gray-200: #E5E7EB;
+            --color-gray-500: #6B7280;
+            --color-gray-600: #4B5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1F2937;
+            --color-gray-900: #111827;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--color-gray-50);
+        }
+
+        .container {
+            max-width: 64rem;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-gray-800);
+            margin: 0;
+        }
+
+        .date {
+            font-size: 0.875rem;
+            color: var(--color-gray-500);
+        }
+
+        .section {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--color-gray-700);
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--color-gray-50);
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--color-gray-600);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--color-gray-800);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: var(--color-gray-50);
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            font-size: 0.875rem;
+            color: var(--color-gray-500);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+
+        td:first-child {
+            font-weight: 500;
+            color: var(--color-gray-900);
+        }
+
+        .footer {
+            padding: 1.5rem 2rem;
+            background-color: var(--color-gray-50);
+            border-top: 1px solid var(--color-gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-text {
+            font-size: 0.875rem;
+            color: var(--color-gray-600);
+        }
+
+        .print-button {
+            padding: 0.5rem 1rem;
+            background-color: var(--color-gray-800);
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .print-button:hover {
+            background-color: var(--color-gray-700);
+        }
+
+        .overflow-container {
+            overflow-x: auto;
+        }
+
+        @media print {
+            body {
+                background-color: white;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+
+            .container {
+                box-shadow: none;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            @page {
+                margin: 1cm;
+            }
+        }
+    </style>
+</head>
+<body>
+<main style="min-height: 100vh; padding: 2rem;">
+    <div class="container">
+        <!-- Encabezado del Informe -->
+        <div class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    Informe del Departamento de {{ departamento.nombre_departamento }}
+                </h1>
+                <div class="date">
+                    Fecha: {% now "d/m/Y" %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Resumen General -->
+        <div class="section">
+            <h2 class="section-title">Información General</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Total de Empleados</p>
+                    <p class="stat-value">{{ total_empleados }}</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Total de Cargos</p>
+                    <p class="stat-value">{{ total_cargos }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de Cargos y Empleados -->
+        <div class="section">
+            <h2 class="section-title">Distribución de Personal por Cargo</h2>
+            <div class="overflow-container">
+                <table>
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cargo
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Número de Empleados
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Salario Base
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for cargo in cargos %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ cargo.cargo }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ cargo.total_empleados }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                ${{ cargo.salario|floatformat:2 }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Lista Detallada de Empleados -->
+        <div class="section">
+            <h2 class="section-title">Lista de Empleados</h2>
+            <div class="overflow-container">
+                <table>
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nombre Completo
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Cargo
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Código
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Fecha Contratación
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for empleado in empleados %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                {{ empleado.primer_nombre }} {% if empleado.segundo_nombre %}{{ empleado.segundo_nombre }}{% endif %} 
+                                {{ empleado.primer_apellido }} {% if empleado.segundo_apellido %}{{ empleado.segundo_apellido }}{% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ empleado.cargo.cargo }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ empleado.codigo }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{ empleado.fecha_contratacion|date:"d/m/Y" }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pie del Informe -->
+        <div class="footer">
+            <p class="footer-text">
+                Informe generado automáticamente por el sistema
+            </p>
+            <button onclick="window.print()" class="print-button">
+                Imprimir Informe
+            </button>
+        </div>
+    </div>
+</main>
+</body>
+</html>

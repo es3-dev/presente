@@ -17,7 +17,7 @@ class Reunion(models.Model):
         creating = self._state.adding  # Saber si es creación
         super().save(*args, **kwargs)
         if creating and not self.qr_code:
-            url = f'http://localhost:8000/reunion/asistencia_reunion/{self.id}'
+            url = f'http://localhost:8000/reunion/{self.id}/asistencia/'
             qr = qrcode.make(url)
             buffer = BytesIO()
             qr.save(buffer, format='PNG')
