@@ -1,3 +1,4 @@
+// Funcionar para copiar enlace de reunion
 function copy_link() {
     const input = document.getElementById('enlace');
     const btn = document.getElementById('btn-copy-link');
@@ -18,6 +19,62 @@ function copy_link() {
             alert('No se pudo copiar el enlace');
         });
 }
+
+
+// Función para eliminar empleado
+function eliminarEmpleado(empleadoId) {
+    if (confirm('¿Está seguro que desea eliminar este empleado?')) {
+        // Realizar la solicitud DELETE al servidor
+        fetch(`/management/empleados/${empleadoId}/eliminar/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Recargar la página después de eliminar
+                window.location.reload();
+            } else {
+                alert('Error al eliminar el empleado');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error al eliminar el empleado');
+        });
+    }
+}
+
+// Función para obtener el token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Función para buscar empleados
+function buscarEmpleados() {
+    const searchInput = document.getElementById('search-empleados');
+    const searchTerm = searchInput.value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
 
 document.addEventListener('DOMContentLoaded', () => {
     //Función para buscar reuniones en la section de Reportes

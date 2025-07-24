@@ -12,45 +12,18 @@ from .models import Departamento, Cargo, Empleado
 def indexManagement(request):
     departamentos = Departamento.objects.all()
     cargos = Cargo.objects.all()
-    if request.method == 'POST':
-        primerNombre = request.POST['primerNombre']
-        segundoNombre = request.POST['segundoNombre']
-        primerApellido = request.POST['primerApellido']
-        segundoApellido = request.POST['segundoApellido']
-        documento = int(request.POST['documento'])
-
-        def generar_codigo(pNombre, idempleado):
-            nombre = (pNombre[:4] if len(pNombre) >= 4 else pNombre.ljust(4, 'X'))
-            idemp = idempleado[-4:]
-            return f'@{nombre}{idemp}'
-        codigo = generar_codigo(primerNombre, str(documento))
-
-        email = request.POST['email']
-        telefono = int(request.POST['telefono'])
-        fechaContratacion = request.POST['fecha_contratacion']
-        departamento_id = request.POST['departamento_id']
-        departamento = get_object_or_404(Departamento, id=departamento_id)
-        cargo_id = request.POST['cargo_id']
-        cargo = get_object_or_404(Cargo, id=cargo_id)
-        empleado = Empleado.objects.create(
-            primer_nombre = primerNombre,
-            segundo_nombre = segundoNombre,
-            primer_apellido = primerApellido,
-            segundo_apellido = segundoApellido,
-            documento = documento,
-            codigo = codigo,
-            email = email,
-            telefono = telefono,
-            fecha_contratacion = fechaContratacion,
-            departamento = departamento,
-            cargo = cargo
-        )
-        empleado.save()
-        return redirect('index-management')
     return render(request, 'management/index.html', {
         'departamentos': departamentos,
         'cargos': cargos,
     })
+
+def generar_email(pNombre, pApellido, idempleado):
+    return f'{pNombre}_{pApellido}{idempleado[-4:]}@rys.com'
+
+def generar_codigo(pNombre, idempleado):
+    nombre = (pNombre[:4] if len(pNombre) >= 4 else pNombre.ljust(4, 'X'))
+    idemp = idempleado[-4:]
+    return f'@{nombre}{idemp}'
 
 def viewEmpleados(request):
     lista_empleados = Empleado.objects.all().order_by('-id')
@@ -60,12 +33,128 @@ def viewEmpleados(request):
     empleados = paginator.get_page(page_number)
     return render(request, 'management/sections/empleados/empleados.html', {
         'empleados': empleados,
-
     })
+
+def viewCrearEmpleado(request):
+    departamentos = Departamento.objects.all()
+    cargos = Cargo.objects.all()
+    context = {
+        'departamentos': departamentos,
+        'cargos': cargos,
+    }
+
+    if request.method == 'POST':
+        try:
+            primerNombre = request.POST['primerNombre'].capitalize()
+            segundoNombre = request.POST['segundoNombre'].title()
+            primerApellido = request.POST['primerApellido'].capitalize()
+            segundoApellido = request.POST['segundoApellido'].capitalize()
+            documento = request.POST['numDocumento']
+
+            codigo = generar_codigo(primerNombre, str(documento))
+            email = generar_email(primerNombre, primerApellido, documento)
+
+            telefono = request.POST['numTelefono']
+            fechaContratacion = request.POST['fechaContratacion']
+            departamento_id = request.POST['departamento']
+            departamento = get_object_or_404(Departamento, id=departamento_id)
+            cargo_id = request.POST['cargo']
+            cargo = get_object_or_404(Cargo, id=cargo_id)
+            
+            empleado = Empleado.objects.create(
+                primer_nombre = primerNombre,
+                segundo_nombre = segundoNombre,
+                primer_apellido = primerApellido,
+                segundo_apellido = segundoApellido,
+                documento = documento,
+                codigo = codigo,
+                email = email,
+                telefono = telefono,
+                fecha_contratacion = fechaContratacion,
+                departamento = departamento,
+                cargo = cargo
+            )
+            return redirect('vistaInfoEmpleado', empleado_id=empleado.id)
+            
+        except Exception as e:
+            context['msg_error'] = f'Error al crear el empleado: {str(e)}'
+            return render(request, 'management/sections/empleados/crear_empleado.html', context)
+
+    return render(request, 'management/sections/empleados/crear_empleado.html', context)
 
 def viewInfoEmpleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
-    return render(request, 'management/sections/empleados/informacion_empleado.html', {
+
+    if request.method == 'POST':
+        return redirect('vistaEliminarEmpleado', empleado_id=empleado.id)
+    
+    return render(request, 'management/sections/empleados/info_empleado.html', {
+        'empleado': empleado,
+    })
+
+def viewEditarEmpleado(request, empleado_id):
+    empleado = get_object_or_404(Empleado, id=empleado_id)
+    departamentos = Departamento.objects.all()
+    cargos = Cargo.objects.all()
+    context = {
+        'empleado': empleado,
+        'departamentos': departamentos,
+        'cargos': cargos,
+    }
+
+    if request.method == 'POST':
+        try:
+            primerNombre = request.POST['primerNombre'].capitalize()
+            segundoNombre = request.POST['segundoNombre'].title()
+            primerApellido = request.POST['primerApellido'].capitalize()
+            segundoApellido = request.POST['segundoApellido'].capitalize()
+            documento = request.POST['numDocumento']
+            numTelefono = request.POST['numTelefono']
+            fecha_contratacion = request.POST['fechaContratacion']
+            email = request.POST['email']
+            codigo = request.POST['codigo']
+            departamento_id = request.POST['departamento']
+            departamento = get_object_or_404(Departamento, id=departamento_id)
+            cargo_id = request.POST['cargo']
+            cargo = get_object_or_404(Cargo, id=cargo_id)
+
+            if len(numTelefono) != 10:
+                context['msg_error'] = 'Por favor ingresa un número de telefono válido [10 digitos]'
+                return render(request, 'management/sections/empleados/editar_empleado.html', context)
+
+            if email:
+                empleado.email = email
+            else:
+                email = generar_email(primerNombre, primerApellido, documento)
+                empleado.email = email
+            
+            if codigo:
+                empleado.codigo = codigo
+            else:
+                codigo = generar_codigo(primerNombre, str(documento))
+                empleado.codigo = codigo
+
+            empleado.primer_nombre = primerNombre
+            empleado.segundo_nombre = segundoNombre
+            empleado.primer_apellido = primerApellido
+            empleado.segundo_apellido = segundoApellido
+            empleado.documento = documento
+            empleado.telefono = numTelefono
+            empleado.fecha_contratacion = fecha_contratacion
+            empleado.departamento = departamento
+            empleado.cargo = cargo
+            empleado.save()
+            return redirect('vistaEmpleados')
+        except Exception as e:
+            context['msg_error'] = f'Error al editar el empleado: {str(e)}'
+    return render(request, 'management/sections/empleados/editar_empleado.html', context)
+
+def viewEliminarEmpleado(request, empleado_id):
+    empleado = get_object_or_404(Empleado, id=empleado_id)
+    if request.method == 'POST':
+        empleado.delete()
+        return redirect('vistaEmpleados')
+    return render(request, 'management/sections/empleados/eliminar_empleado.html', {
         'empleado': empleado,
     })
 

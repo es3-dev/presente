@@ -1,70 +1,122 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %} Empleados | Management {% endblock title %}
 
 {% block content %}
-    <main class="w-full min-h-[calc(100dvh-75px)] flex items-start justify-center px-4 py-6 gap-10">
-        <!-- Sección Tabla -->
-    <section class="w-full max-w-8xl bg-white rounded-xl shadow-xl p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Listado de empleados</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-300 rounded-xl">
-                <thead class="bg-[#F54B64] text-white text-left">
-                    <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Nombres</th>
-                        <th class="px-4 py-2">Apellidos</th>
-                        <th class="px-4 py-2">Documento</th>
-                        <th class="px-4 py-2">Codigo</th>
-                        <th class="px-4 py-2">Cargo</th>
-                        <th class="px-4 py-2">Email</th>
-                        <th class="px-4 py-2 text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700">
-                    {% for emp in empleados %}
-                    <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
-                        <td class="px-4 py-2">{{ forloop.counter }}</td>
-                        <td class="px-4 py-2">{{ emp.primer_nombre }} {{ emp.segundo_nombre }}</td>
-                        <td class="px-4 py-2">{{ emp.primer_apellido }} {{ emp.segundo_apellido }}</td>
-                        <td class="px-4 py-2">{{ emp.documento }}</td>
-                        <td class="px-4 py-2">{{ emp.codigo }}</td>
-                        <td class="px-4 py-2">{{ emp.cargo }}</td>
-                        <td class="px-4 py-2">{{ emp.email }}</td>
-                        <td class="px-4 py-2 text-center">
-                            <!-- Puedes agregar botones de editar/eliminar -->
-                            <a class="bg-[#F54B64] py-1 px-2 rounded-xl text-white font-medium text-sm"
-                                href="{% url 'vistaInfoEmpleado' emp.id %}">
-                                Ver informacion
+    <main class="w-full min-h-[calc(100dvh-75px)] bg-gray-100 flex flex-col px-4 py-3 gap-y-2">
+        <!-- Header con búsqueda -->
+        <header class="w-full flex flex-col items-center justify-between border-b-2 border-b-gray-200 sm:flex-row sm:items-center px-2.5 py-2">
+            <h2 class="text-lg font-medium sm:text-2xl">Gestión de Empleados</h2>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <input type="text" 
+                        id="search-empleados" 
+                        class="w-64 px-4 py-2 pl-10 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#F54B64] focus:border-transparent" 
+                        placeholder="Buscar empleado..."
+                        oninput="buscarEmpleados()">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3">
+                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <button onclick="window.location.href='{% url 'vistaCrearEmpleado' %}'" 
+                        class="flex items-center gap-2 px-4 py-2 rounded-sm border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Crear Empleado
+                </button>
+            </div>
+        </header>
+
+        <section class="flex-grow flex flex-col gap-2 sm:flex-row">
+            <!-- Lista de Empleados -->
+            <div class="flex-[3] p-3">
+                <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Documento</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Departamento</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
+                                    <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for empleado in empleados %}
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {{ empleado.codigo }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ empleado.primer_nombre }} {% if empleado.segundo_nombre %}{{ empleado.segundo_nombre }}{% endif %}
+                                        {{ empleado.primer_apellido }} {% if empleado.segundo_apellido %}{{ empleado.segundo_apellido }}{% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ empleado.documento }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ empleado.departamento.nombre_departamento }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                        {{ empleado.cargo.cargo }}
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                        <div class="flex justify-center space-x-2">
+                                            <a href="{% url 'vistaInfoEmpleado' empleado.id %}" 
+                                                class="text-green-700 hover:text-green-500 hover:cursor-pointer" title="Ver detalles">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
+                                            <button onclick="window.location.href = '{% url 'vistaEditarEmpleado' empleado.id %}' "
+                                                    class="text-sky-400 hover:text-sky-500 hover:cursor-pointer" title="Editar información">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </button>
+                                            <button onclick="window.location.href = '{% url 'vistaEliminarEmpleado' empleado.id %}' "
+                                                    class="text-[#F54B64] hover:text-red-300 hover:cursor-pointer" title="Eliminar Empleado">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="px-6 py-4 text-center text-gray-500">No hay empleados registrados</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        </div>
+                    </main>
+                    <!-- Paginación -->
+                    <div class="flex justify-center items-center mt-1 py-2 space-x-2">
+                        {% if empleados.has_previous %}
+                            <a href="?page={{ empleados.previous_page_number }}" 
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                Anterior
                             </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="px-4 py-4 text-center text-gray-500">No hay empleados registrados.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="flex justify-center mt-4 space-x-2">
-            {% if empleados.has_previous %}
-                <a href="?page={{ empleados.previous_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Anterior</a>
-            {% endif %}
+                        {% endif %}
 
-            {% for num in empleados.paginator.page_range %}
-                {% if empleados.number == num %}
-                    <span class="px-3 py-1 bg-[#F54B64] text-white rounded">{{ num }}</span>
-                {% else %}
-                    <a href="?page={{ num }}" class="px-3 py-1 border rounded hover:bg-gray-200">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
+                        <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+                            Página {{ empleados.number }} de {{ empleados.paginator.num_pages }}
+                        </span>
 
-            {% if empleados.has_next %}
-                <a href="?page={{ empleados.next_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Siguiente</a>
-            {% endif %}
-        </div>
-    </section>
-    </main>
-
-{% endblock content %}
+                        {% if empleados.has_next %}
+                            <a href="?page={{ empleados.next_page_number }}"
+                                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                                Siguiente
+                            </a>
+                        {% endif %}
+                    </div>
+{% endblock %}

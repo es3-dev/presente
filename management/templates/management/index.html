@@ -1,31 +1,136 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Management | Inicio {% endblock title %}
+{% block title %} Inicio | Management {% endblock title %}
 
 {% block content %}
-<main>
-    <form action="" method="post">
-        {% csrf_token %}
-        <input type="text" name="primerNombre" id="primerNombre" placeholder="p nombre" required>
-        <input type="text" name="segundoNombre" id="segundoNombre" placeholder="s nombre">
-        <input type="text" name="primerApellido" id="primerApellido" placeholder="p apellido" required>
-        <input type="text" name="segundoApellido" id="segundoApellido" placeholder="s apellido">
-        <input type="number" name="documento" id="documento" placeholder="documento" required>
-        <input type="email" name="email" id="email" placeholder="email" required>
-        <input type="number" name="telefono" id="telefono" placeholder="numero" required>
-        <input type="date" name="fecha_contratacion" id="fecha_contratacion" placeholder="fecha contratacion" required>
-        <select name="departamento_id" id="departamento_id" required>
-            {% for depa in departamentos %}
-            <option value="{{ depa.id }}">{{ depa.nombre_departamento }}</option>
-            {% endfor %}
-        </select>
-        <select name="cargo_id" id="cargo_id">
-            {% for cargo in cargos %}
-            <option value="{{ cargo.id }}">{{ cargo.cargo }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">ENVIAR</button>
-    </form>
-</main>
+    <main class="w-full min-h-[calc(100dvh-75px)] bg-gray-100 flex flex-col px-4 py-3 gap-y-2">
+        <header class="w-full flex flex-col items-center justify-between border-b-2 border-b-gray-200 sm:flex-row sm:items-center px-2.5 py-2">
+            <h2 class="text-lg font-medium sm:text-2xl">Panel de Administración</h2>
+            <div class="text-sm text-gray-500">
+                {% now "d/m/Y" %}
+            </div>
+        </header>
+
+        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+            <!-- Card Departamentos -->
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-500">Gestión</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Departamentos</h3>
+                <p class="text-gray-600 mb-4">Administra los departamentos de la empresa</p>
+                <a href="{% url 'vistaDepartamentos' %}" class="text-green-600 hover:text-green-700 font-medium flex items-center">
+                    Ir a Departamentos
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Card Empleados -->
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-500">Gestión</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Empleados</h3>
+                <p class="text-gray-600 mb-4">Gestiona la información de los empleados</p>
+                <a href="{% url 'vistaEmpleados' %}" class="text-blue-600 hover:text-blue-700 font-medium flex items-center">
+                    Ir a Empleados
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Card Cargos -->
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-500">Gestión</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Cargos</h3>
+                <p class="text-gray-600 mb-4">Administra los cargos y salarios</p>
+                <a href="{% url 'vistaCargos' %}" class="text-purple-600 hover:text-purple-700 font-medium flex items-center">
+                    Ir a Cargos
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Card Reportes -->
+            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-semibold text-gray-500">Informes</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Reportes</h3>
+                <p class="text-gray-600 mb-4">Genera informes y estadísticas</p>
+                <a href="#" class="text-yellow-600 hover:text-yellow-700 font-medium flex items-center">
+                    Ver Reportes
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Resumen Estadísticas -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Resumen de Personal</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Total Empleados</span>
+                        <span class="font-semibold text-gray-800">{{ empleados.count }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Departamentos</span>
+                        <span class="font-semibold text-gray-800">{{ departamentos.count }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-600">Cargos</span>
+                        <span class="font-semibold text-gray-800">{{ cargos.count }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Acciones Rápidas</h3>
+                <div class="space-y-3">
+                    <a href="{% url 'vistaEmpleados' %}" class="flex items-center text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Nuevo Empleado
+                    </a>
+                    <a href="{% url 'vistaDepartamentos' %}" class="flex items-center text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Generar Reporte
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
 {% endblock %}
