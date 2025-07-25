@@ -10,7 +10,7 @@
     <section class="w-full max-w-6xl flex flex-col md:flex-row gap-6 items-center justify-center">
         
         <!-- Contenedor: Formulario -->
-        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-xl p-6">
+        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-md p-6">
             <h1 class="text-3xl font-bold text-center mb-4 text-gray-800">Detalle de la reunión</h1>
             <form action="" method="get" class="flex flex-col gap-4">
                 {% csrf_token %}
@@ -22,7 +22,7 @@
                         name="titulo" 
                         id="titulo"
                         value="{{ reunion.titulo }}"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none" readonly>
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none" readonly>
                 </div>
                 <!-- Descripción -->
                 <div class="flex flex-col gap-1">
@@ -31,7 +31,7 @@
                         name="descripcion" 
                         id="descripcion"
                         rows="3"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none" readonly>{{ reunion.descripcion }}</textarea>
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none" readonly>{{ reunion.descripcion }}</textarea>
                 </div>
                 <!-- Fecha y hora -->
                 <div class="flex flex-col gap-1">
@@ -41,7 +41,7 @@
                         name="datetime"
                         value="{{ reunion.fecha }}" 
                         id="datetime"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800" readonly>
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800" readonly>
                 </div>
                 <!-- Departamento -->
                 <div class="flex flex-col gap-1">
@@ -51,7 +51,7 @@
                         name="departamento" 
                         id="departamento"
                         value="{{ reunion.departamento }}"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800" readonly>
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800" readonly>
                 </div>
                 <!-- Botón -->
                 <div class="flex flex-col gap-1">
@@ -60,13 +60,13 @@
                         type="text" 
                         name="enlace" 
                         id="enlace"
-                        value="127.0.0.1:8000/reunion/asistencia_reunion/{{ reunion.id }}/"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none" readonly>
+                        value="127.0.0.1:8000/reunion/{{ reunion.id }}/asistencia/"
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none" readonly>
                     <button 
                         type="submit"
                         onclick="copy_link()"
                         id="btn-copy-link"
-                        class="bg-[#F54B64] hover:bg-[#ff6d7a] text-white font-semibold py-2 px-6 rounded-xl transition w-full">
+                        class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors w-full">
                         Copiar link
                     </button>
                 </div>
@@ -83,55 +83,57 @@
     {# Contenedor de tabla de asistencia #}
     <section class="w-full max-w-6xl flex flex-col md:flex-row gap-6 items-center justify-center">
         <div class="w-full max-w-8xl bg-white rounded-xl shadow-xl p-6">
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Listado de Asistencia</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full border border-gray-300 rounded-xl">
-                <thead class="bg-[#F54B64] text-white text-left">
-                    <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Nombres</th>
-                        <th class="px-4 py-2">Apellidos</th>
-                        <th class="px-4 py-2">Documento</th>
-                        <th class="px-4 py-2">Codigo</th>
-                        <th class="px-4 py-2 text-center">Cargo</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700">
-                    {% for asistencia in asistencias %}
-                    <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
-                        <td class="px-4 py-2">{{ forloop.counter }}</td>
-                        <td class="px-4 py-2">{{ asistencia.nombre }}</td>
-                        <td class="px-4 py-2">{{ asistencia.apellido }}</td>
-                        <td class="px-4 py-2">{{ asistencia.documento }}</td>
-                        <td class="px-4 py-2">{{ asistencia.codigo }}</td>
-                        <td class="px-4 py-2 text-center">{{ asistencia.cargo }}</td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="px-4 py-4 text-center text-gray-500">No hay asistencias registradas.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        <div class="flex justify-center mt-4 space-x-2">
-            {% if asistencias.has_previous %}
-                <a href="?page={{ asistencias.previous_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Anterior</a>
-            {% endif %}
-
-            {% for num in asistencias.paginator.page_range %}
-                {% if asistencias.number == num %}
-                    <span class="px-3 py-1 bg-[#F54B64] text-white rounded">{{ num }}</span>
-                {% else %}
-                    <a href="?page={{ num }}" class="px-3 py-1 border rounded hover:bg-gray-200">{{ num }}</a>
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Listado de Asistencia</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full border border-gray-300 rounded-xl">
+                    <thead class="bg-[#F54B64] text-white text-left">
+                        <tr>
+                            <th class="px-4 py-2">#</th>
+                            <th class="px-4 py-2">Nombres</th>
+                            <th class="px-4 py-2">Apellidos</th>
+                            <th class="px-4 py-2">Documento</th>
+                            <th class="px-4 py-2">Codigo</th>
+                            <th class="px-4 py-2 text-center">Cargo</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                        {% for asistencia in asistencias %}
+                        <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
+                            <td class="px-4 py-2">{{ forloop.counter }}</td>
+                            <td class="px-4 py-2">{{ asistencia.nombre }}</td>
+                            <td class="px-4 py-2">{{ asistencia.apellido }}</td>
+                            <td class="px-4 py-2">{{ asistencia.documento }}</td>
+                            <td class="px-4 py-2">{{ asistencia.codigo }}</td>
+                            <td class="px-4 py-2 text-center">{{ asistencia.cargo }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="px-4 py-4 text-center text-gray-500">No hay asistencias registradas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex justify-center items-center py-2 space-x-2">
+                {% if asistencias.has_previous %}
+                    <a href="?page={{ asistencias.previous_page_number }}" 
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Anterior
+                    </a>
                 {% endif %}
-            {% endfor %}
 
-            {% if asistencias.has_next %}
-                <a href="?page={{ asistencias.next_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Siguiente</a>
-            {% endif %}
+                <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+                    Página {{ asistencias.number }} de {{ asistencias.paginator.num_pages }}
+                </span>
+
+                {% if asistencias.has_next %}
+                    <a href="?page={{ asistencias.next_page_number }}"
+                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                        Siguiente
+                    </a>
+                {% endif %}
+            </div>
         </div>
-    </div>
     </section>
 </main>
 {% endblock %}

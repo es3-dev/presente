@@ -12,7 +12,7 @@
             </div>
         </header>
 
-        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        <section class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 p-4">
             <!-- Card Departamentos -->
             <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
                 <div class="flex items-center justify-between mb-4">
@@ -72,26 +72,6 @@
                     </svg>
                 </a>
             </div>
-
-            <!-- Card Reportes -->
-            <div class="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-                <div class="flex items-center justify-between mb-4">
-                    <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                    </div>
-                    <span class="text-sm font-semibold text-gray-500">Informes</span>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-2">Reportes</h3>
-                <p class="text-gray-600 mb-4">Genera informes y estadísticas</p>
-                <a href="#" class="text-yellow-600 hover:text-yellow-700 font-medium flex items-center">
-                    Ver Reportes
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                </a>
-            </div>
         </section>
 
         <!-- Resumen Estadísticas -->
@@ -117,7 +97,7 @@
             <div class="bg-white rounded-lg shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Acciones Rápidas</h3>
                 <div class="space-y-3">
-                    <a href="{% url 'vistaEmpleados' %}" class="flex items-center text-gray-600 hover:text-gray-800">
+                    <a href="{% url 'vistaCrearEmpleado' %}" class="flex items-center text-gray-600 hover:text-gray-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -125,12 +105,18 @@
                     </a>
                     <a href="{% url 'vistaDepartamentos' %}" class="flex items-center text-gray-600 hover:text-gray-800">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
-                        Generar Reporte
+                        Nuevo Departamento
+                    </a>
+                    <a href="{% url 'vistaCrearCargo' %}" class="flex items-center text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Nuevo Cargo
                     </a>
                 </div>
             </div>
         </section>
     </main>
-{% endblock %}
+{% endblock content %}

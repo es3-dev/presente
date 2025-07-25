@@ -8,7 +8,7 @@
         <!-- Header con búsqueda -->
         <header class="w-full flex flex-col items-center justify-between border-b-2 border-b-gray-200 sm:flex-row sm:items-center px-2.5 py-2">
             <h2 class="text-lg font-medium sm:text-2xl">Gestión de Empleados</h2>
-            <div class="flex items-center gap-4">
+            <div class="flex flex-col sm:flex-row items-center gap-3">
                 <div class="relative">
                     <input type="text" 
                         id="search-empleados" 
@@ -21,13 +21,16 @@
                         </svg>
                     </div>
                 </div>
-                <button onclick="window.location.href='{% url 'vistaCrearEmpleado' %}'" 
-                        class="flex items-center gap-2 px-4 py-2 rounded-sm border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors">
+                <a href="{% url 'vistaCrearEmpleado' %}"
+                        class="flex items-center gap-2 px-4 py-1.5 rounded-md border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                     </svg>
                     Crear Empleado
-                </button>
+                </a>
+                <a href="{% url 'vistaIndexManagement' %}" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                    Volver
+                </a>
             </div>
         </header>
 
@@ -75,18 +78,18 @@
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
                                             </a>
-                                            <button onclick="window.location.href = '{% url 'vistaEditarEmpleado' empleado.id %}' "
+                                            <a href = "{% url 'vistaEditarEmpleado' empleado.id %}"
                                                     class="text-sky-400 hover:text-sky-500 hover:cursor-pointer" title="Editar información">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                 </svg>
-                                            </button>
-                                            <button onclick="window.location.href = '{% url 'vistaEliminarEmpleado' empleado.id %}' "
+                                            </a>
+                                            <a href = "{% url 'vistaEliminarEmpleado' empleado.id %}"
                                                     class="text-[#F54B64] hover:text-red-300 hover:cursor-pointer" title="Eliminar Empleado">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                 </svg>
-                                            </button>
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>

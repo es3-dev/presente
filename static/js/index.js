@@ -21,6 +21,26 @@ function copy_link() {
 }
 
 
+function buscarReuniones() {
+    const searchTerm = document.getElementById('search-reuniones').value.toLowerCase();
+    const rows = document.querySelectorAll('#tab-reuniones tbody tr');
+            
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
+function buscarAsistencias() {
+    const searchTerm = document.getElementById('search-asistencias').value.toLowerCase();
+    const rows = document.querySelectorAll('#tab-asistencias tbody tr');
+            
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        row.style.display = text.includes(searchTerm) ? '' : 'none';
+    });
+}
+
 // Función para buscar empleados
 function buscarEmpleados() {
     const searchInput = document.getElementById('search-empleados');

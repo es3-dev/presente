@@ -10,7 +10,7 @@
     <section class="w-full max-w-6xl flex flex-col md:flex-row gap-6 items-center justify-center">
         
         {# Contenedor: Formulario #}
-        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-xl p-6">
+        <div class="w-full md:w-[65%] bg-white shadow-xl rounded-md p-6">
             <h1 class="text-3xl font-bold text-center mb-4 text-gray-800">Crear reunión</h1>
             <form action="" method="post" class="flex flex-col gap-4">
                 {% csrf_token %}
@@ -21,7 +21,7 @@
                         type="text" 
                         name="titulo" 
                         id="titulo"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none"
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none"
                         placeholder="Ejemplo: Reunión mensual">
                 </div>
                 <!-- Descripción -->
@@ -31,7 +31,7 @@
                         name="descripcion" 
                         id="descripcion"
                         rows="3"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none"
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none resize-none"
                         placeholder="Describe brevemente..."></textarea>
                 </div>
                 <!-- Fecha y hora -->
@@ -41,7 +41,7 @@
                         type="datetime-local" 
                         name="datetime" 
                         id="datetime"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800">
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] focus:outline-none text-gray-800">
                 </div>
                 <!-- Departamento -->
                 <div class="flex flex-col gap-1">
@@ -49,7 +49,7 @@
                     <select 
                         name="departamento" 
                         id="departamento"
-                        class="rounded-xl py-2 px-3 border border-gray-300 focus:border-[#F54B64] bg-white text-gray-800">
+                        class="rounded-md py-2 px-3 border border-gray-300 focus:border-[#F54B64] bg-white text-gray-800">
                         {% for depa in departamentos %}
                         <option value="{{ depa.id }}">{{ depa.nombre_departamento }}</option>
                         {% endfor %}
@@ -59,18 +59,13 @@
                 <div class="flex justify-center">
                     <button 
                         type="submit"
-                        class="bg-[#F54B64] hover:bg-[#ff6d7a] text-white font-semibold py-2 px-6 rounded-xl transition w-full">
+                        class="flex items-center justify-center gap-2 px-3 py-1.5 rounded-md border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors w-full">
                         Crear Reunión
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Contenedor visual o ilustración -->
-        <div class="hidden md:flex w-full md:w-[35%] h-[450px] bg-gradient-to-br from-[#F54B64] via-[#ff8a9f] to-[#F54B64] rounded-xl shadow-md items-center justify-center">
-            <!-- Puedes agregar ícono, texto, imagen o logo aquí -->
-            <p class="text-white text-xl font-semibold px-4 text-center">Organiza tus reuniones de forma eficiente</p>
-        </div>
     </section>
 
     <!-- Sección 2: Tabla -->
@@ -99,7 +94,7 @@
                         <td class="px-4 py-2 text-center">
                             <!-- Puedes agregar botones de editar/eliminar -->
                             <a class="bg-[#F54B64] py-1 px-2 rounded-xl text-white text-sm"
-                                href="{% url 'mostrarDetalleReunion' reunion.id %}">
+                                href="{% url 'vistaMostrarDetalleReunion' reunion.id %}">
                                 Detalle
                             </a>
                         </td>
@@ -112,22 +107,24 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-center mt-4 space-x-2">
+        <div class="flex justify-center items-center py-2 space-x-2">
             {% if reuniones.has_previous %}
-                <a href="?page={{ reuniones.previous_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Anterior</a>
+                <a href="?page={{ reuniones.previous_page_number }}" 
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                    Anterior
+                </a>
             {% endif %}
 
-            {% for num in reuniones.paginator.page_range %}
-                {% if reuniones.number == num %}
-                    <span class="px-3 py-1 bg-[#F54B64] text-white rounded">{{ num }}</span>
-                {% else %}
-                    <a href="?page={{ num }}" class="px-3 py-1 border rounded hover:bg-gray-200">{{ num }}</a>
-                {% endif %}
-            {% endfor %}
+            <span class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md">
+                    Página {{ reuniones.number }} de {{ reuniones.paginator.num_pages }}
+            </span>
 
             {% if reuniones.has_next %}
-                <a href="?page={{ reuniones.next_page_number }}" class="px-3 py-1 border rounded hover:bg-gray-200">Siguiente</a>
-            {% endif %}
+                <a href="?page={{ reuniones.next_page_number }}"
+                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                    Siguiente
+                </a>
+        {% endif %}
         </div>
     </section>
 </main>

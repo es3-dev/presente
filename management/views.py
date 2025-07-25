@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from weasyprint import HTML
 from django.conf import settings
 import tempfile
+from datetime import datetime
 from django.core.paginator import Paginator
 from django.db.models import Count
 from django.http import JsonResponse, HttpResponse
@@ -398,3 +399,41 @@ def viewEliminarCargo(request, cargo_id):
     return render(request, 'management/sections/cargos/eliminar_cargo.html', {
         'cargo': cargo,
     })
+
+def generarReporteCargoPDF(request, cargo_id):
+    try:
+        # Obtener el cargo y sus datos relacionados
+        cargo = get_object_or_404(Cargo, id=cargo_id)
+        
+        # Obtener empleados del cargo con información relacionada
+        empleados = Empleado.objects.filter(cargo=cargo).select_related('departamento')
+        
+        # Calcular totales y estadísticas
+        total_empleados = empleados.count()
+        
+        # Preparar el contexto para el template
+        context = {
+            'cargo': cargo,
+            'empleados': empleados,
+            'total_empleados': total_empleados,
+            'fecha_generacion': datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        }
+
+        # Renderizar el template a HTML
+        html_string = render_to_string('management/sections/cargos/informe_cargo.html', context)
+
+        # Crear la respuesta HTTP
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="Informe_Cargo_{cargo.cargo}_{cargo_id}.pdf"'
+
+        # Configurar weasyprint para usar fuentes del sistema
+        HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(
+            response,
+            presentational_hints=True
+        )
+
+        return response
+        
+    except Exception as e:
+        print(f"Error generando PDF: {str(e)}")
+        return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)

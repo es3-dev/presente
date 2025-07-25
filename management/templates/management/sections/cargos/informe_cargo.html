@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Informe del Cargo</title>
+    <style>
+        @page {
+            size: letter portrait;
+            margin: 2.5cm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #F54B64;
+            padding-bottom: 20px;
+        }
+        .cargo-info {
+            margin-bottom: 30px;
+        }
+        .info-block {
+            margin-bottom: 20px;
+        }
+        .info-block h3 {
+            color: #F54B64;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.8em;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Informe del Cargo</h1>
+        <p>{{ cargo.cargo }}</p>
+    </div>
+
+    <div class="cargo-info">
+        <div class="info-block">
+            <h3>Información General</h3>
+            <p><strong>Departamento:</strong> {{ cargo.departamento.nombre_departamento }}</p>
+            <p><strong>Salario Base:</strong> ${{ cargo.salario|floatformat:2 }}</p>
+            <p><strong>Total de Empleados:</strong> {{ total_empleados }}</p>
+        </div>
+
+        {% if empleados %}
+        <div class="info-block">
+            <h3>Lista de Empleados</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <th>Documento</th>
+                        <th>Teléfono</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for empleado in empleados %}
+                    <tr>
+                        <td>{{ empleado.primer_nombre }} {% if empleado.segundo_nombre %}{{ empleado.segundo_nombre }}{% endif %} 
+                            {{ empleado.primer_apellido }} {% if empleado.segundo_apellido %}{{ empleado.segundo_apellido }}{% endif %}</td>
+                        <td>{{ empleado.documento }}</td>
+                        <td>{{ empleado.telefono }}</td>
+                        <td>{{ empleado.email }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>Fecha de generación: {{ fecha_generacion }}</p>
+        <p>Este es un documento generado automáticamente por el sistema.</p>
+    </div>
+</body>
+</html>

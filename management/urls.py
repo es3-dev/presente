@@ -14,4 +14,5 @@ urlpatterns = [
     path('cargos/crear/', views.viewCrearCargo, name='vistaCrearCargo'),
     path('cargo/editar/<int:cargo_id>', views.viewEditarCargo, name='vistaEditarCargo'),
     path('cargo/eliminar/<int:cargo_id>', views.viewEliminarCargo, name='vistaEliminarCargo'),
+    path('cargo/<int:cargo_id>/reporte/', views.generarReporteCargoPDF, name='generarReporteCargo'),
 ]

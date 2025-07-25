@@ -13,9 +13,12 @@
             </div>
             <form role="search" class="flex flex-col sm:flex-row flex-1 items-start sm:items-center justify-end px-0 sm:px-2 gap-y-1 sm:gap-x-1 h-auto sm:h-full">
                 <label for="busqueda" class="text-sm font-normal">Buscar reporte:</label>
-                <input class="text-sm px-1.5 border rounded border-neutral-500 w-full sm:w-auto"
+                <input class="text-sm px-3 py-1.5 border rounded border-neutral-500 w-full sm:w-auto"
                 type="search" name="busqueda" id="busqueda" placeholder="Reporte semanal">
             <form/>
+            <a href="{% url 'vistaIndexPresente' %}" class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                Volver
+            </a>
         </div>
 
         {# Contenedor para todas las cards #}

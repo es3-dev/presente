@@ -10,17 +10,12 @@ from .models import Reunion, Asistencia
 from management.models import Departamento, Cargo
 
 # Create your views here.
-# def login_personal(request):
-#     return render(request, 'admin/login.html', {
-#         'tipo_header': 'simple',
-#     })
-
-def indexPresente(request):
+def viewIndexPresente(request):
     return render(request, 'presente/index.html', {
         'tipo_header': 'presenteCompleto',
         })
 
-def crearReunion(request):
+def viewCrearReunion(request):
     departamentos = Departamento.objects.all()
 
     if request.method == 'POST':
@@ -30,13 +25,13 @@ def crearReunion(request):
         departamento_id = request.POST['departamento']
         departamento = get_object_or_404(Departamento, id=departamento_id)
 
-        Reunion.objects.create(
+        nuevaReunion = Reunion.objects.create(
             titulo=titulo,
             descripcion=descripcion,
             fecha=fecha,
             departamento=departamento
         )
-        return redirect('reunion')
+        return redirect('vistaMostrarDetalleReunion', reunion_id=nuevaReunion.id)
 
     # Paginación de reuniones
     reuniones_list = Reunion.objects.all().order_by('-fecha')
@@ -51,7 +46,7 @@ def crearReunion(request):
         'tipo_header': 'presenteCompleto',
         })
 
-def mostrarDetalleReunion(request, reunion_id):
+def viewMostrarDetalleReunion(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     asistencias_list = Asistencia.objects.filter(reunion=reunion)
     paginator = Paginator(asistencias_list, 5)
@@ -63,7 +58,7 @@ def mostrarDetalleReunion(request, reunion_id):
         'tipo_header': 'presenteCompleto',
         })
 
-def tomarAsistencia(request, reunion_id):
+def viewTomarAsistencia(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     if request.method == 'POST':
         nombre = request.POST['nombres']
@@ -110,17 +105,100 @@ def generarReportePDF(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     asistencias = Asistencia.objects.filter(reunion=reunion)
 
-    # Renderizar el template a HTML
+    #Renderizar el template a HTML
     html_string = render_to_string('presente/sections/reportes/reporte_pdf.html', {
         'reunion': reunion,
         'asistencias': asistencias,
     })
 
-    # Crear la respuesta HTTP
+    #Crear la respuesta HTTP
     response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="reporte_reunion_{reunion_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+    response['Content-Disposition'] = f'attachment; filename="Reporte_Reunion_{reunion_id}_{reunion.titulo}_{datetime.now().strftime("%Y-%m-%d")}.pdf"'
 
-    # Generar el PDF
+    #Generar el PDF
     HTML(string=html_string).write_pdf(response)
 
     return response
+
+# Vistas de Administración de Reuniones y Asistencias
+def viewAdministracionRyA(request):
+    reuniones = Reunion.objects.all().order_by('-fecha')
+    asistencias = Asistencia.objects.all()
+    context = {
+        'reuniones': reuniones,
+        'asistencias': asistencias,
+        'tipo_header': 'presenteCompleto',
+    }
+    
+    return render(request, 'presente/sections/administracion/administracion_rya.html', context)
+
+def viewEditarReunion(request, reunion_id):
+    reunion = get_object_or_404(Reunion, id=reunion_id)
+    departamentos = Departamento.objects.all()
+    asistencias = Asistencia.objects.filter(reunion=reunion)
+    context = {
+        'tipo_header': 'presenteCompleto',
+        'reunion': reunion,
+        'departamentos': departamentos,
+        'asistencias': asistencias,
+    }
+
+    if request.method == 'POST':
+        try:
+            # Obtener datos del formulario
+            titulo = request.POST['titulo']
+            descripcion = request.POST['descripcion']
+            fecha = request.POST['datetime']
+            departamento_id = request.POST['departamento']
+            estado = request.POST['estado']
+            departamento = get_object_or_404(Departamento, id=departamento_id)
+
+            # Actualizar la reunión
+            reunion.titulo = titulo
+            reunion.descripcion = descripcion
+            reunion.fecha = fecha
+            reunion.departamento = departamento
+            reunion.estado = estado
+            reunion.save()
+
+            return redirect('vistaAdministracionRyA')
+        except Exception as e:
+            context['msg_error'] = f'Error al editar la reunión: {str(e)}'
+            return render(request, 'presente/sections/administracion/editar_reunion.html', context)
+
+    return render(request, 'presente/sections/administracion/editar_reunion.html', context)
+
+def viewEliminarReunion(request, reunion_id):
+    reunion = get_object_or_404(Reunion, id=reunion_id)
+    
+    if request.method == 'POST':
+        try:
+            #Condicional para verificar si hay asistencias registradas
+            if Asistencia.objects.filter(reunion=reunion).exists():
+                return render(request, 'presente/sections/administracion/eliminar_reunion.html', {
+                    'tipo_header': 'presenteCompleto',
+                    'reunion': reunion,
+                    'msg_error': 'No se puede eliminar la reunión porque tiene asistencias registradas'
+                })
+            reunion.delete()
+            return redirect('vistaAdministracionRyA')
+        except Exception as e:
+            return render(request, 'presente/sections/administracion/eliminar_reunion.html', {
+                'tipo_header': 'presenteCompleto',
+                'reunion': reunion,
+                'msg_error': f'Error al eliminar la reunión: {str(e)}'
+            })
+
+    return render(request, 'presente/sections/administracion/eliminar_reunion.html', {
+        'tipo_header': 'presenteCompleto',
+        'reunion': reunion
+    })
+
+def viewEliminarAsistencia(request, asistencia_id):
+    if request.method == 'POST':
+        asistencia = get_object_or_404(Asistencia, id=asistencia_id)
+        reunion_id = asistencia.reunion.id
+        asistencia.delete()
+        return redirect('vistaEditarReunion', reunion_id=reunion_id)
+    return redirect('vistaAdministracionRyA')
+
