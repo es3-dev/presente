@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Eliminar Empleado | Management {% endblock title %}
+{% block title %} Eliminar Cargo | Management {% endblock title %}
 
 {% block content %}
 
     <main class="w-full min-h-[calc(100dvh-75px)] bg-gray-100 flex flex-col px-4 py-3 gap-y-2">
         <header class="w-full flex flex-col items-center justify-between border-b-2 border-b-gray-200 sm:flex-row sm:items-center px-2.5 py-2 transition">
-            <h2 class="text-lg font-medium sm:text-2xl">Eliminar Empleado</h2>
+            <h2 class="text-lg font-medium sm:text-2xl">Eliminar Cargo</h2>
             <div class="flex flex-col items-center sm:flex-row gap-2 transition">
                 <a class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                href="{% url 'vistaEmpleados' %}">Volver</a>
+                href="{% url 'vistaCargos' %}">Volver</a>
             </div>
         </header>
 
@@ -20,11 +20,11 @@
                     {% csrf_token %}
                     <div class="flex flex-col items-center gap-y-2">
                         <h2 class="text-2xl font-bold text-gray-800 mb-4">Confirmar Eliminación</h2>
-                        <p class="text-gray-600 mb-6">¿Estás seguro de que deseas eliminar al empleado <strong>{{ empleado.primer_nombre }} {{ empleado.primer_apellido }}</strong>? Esta acción no se puede deshacer.</p>
+                        <p class="text-gray-600 mb-6">¿Estás seguro de que deseas eliminar el cargo <strong>{{ cargo.cargo }}</strong>? Esta acción no se puede deshacer.</p>
                     </div>
                     <div class="flex flex-row gap-x-2">
                         <a class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                        href="">
+                        href="{% url 'vistaCargos' %}">
                             Cancelar
                         </a>
                         <button class="py-1.5 px-3 rounded-sm border border-[#F54B64] text-[#F54B64] hover:bg-[#F54B64] hover:text-white hover:cursor-pointer transition-colors">

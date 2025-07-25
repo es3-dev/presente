@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Crear Cargo | Management {% endblock title %}
+
+{% block content %}
+
+    <main class="w-full min-h-[calc(100dvh-75px)] bg-gray-100 flex flex-col px-4 py-3 gap-y-2">
+        <header class="w-full flex flex-col items-center justify-between border-b-2 border-b-gray-200 sm:flex-row sm:items-center px-2.5 py-2 transition">
+            <h2 class="text-lg font-medium sm:text-2xl">Crear un nuevo Cargo</h2>
+            <div class="flex flex-col items-center sm:flex-row gap-2 transition">
+                <a class="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                href="{% url 'vistaCargos' %}">Volver</a>
+            </div>
+        </header>
+
+        <section class="flex-grow flex items-center justify-center gap-6 px-4 py-6">
+            <div class="flex-1 max-w-4xl">
+                <form class="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-gray-800">Ingresar datos del Cargo</h2>
+                        {% if msg_error %}
+                            <p class="text-red-600 mt-2">{{ msg_error }}</p>
+                        {% endif %}
+                    </div>
+
+                    {# Nombres y Apellidos #}
+                    <div class="mb-8">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4">Información</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="flex flex-col">
+                                <label for="nombreCargo" class="block text-gray-700 text-sm font-medium mb-2">Nombre del cargo *</label>
+                                <input type="text" name="nombreCargo" id="nombreCargo" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F54B64]  focus:border-transparent">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="salario" class="block text-gray-700 text-sm font-medium mb-2">Salario *</label>
+                                <input type="number" name="salario" id="salario" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F54B64]  focus:border-transparent">
+                            </div>
+                            <div class="flex flex-col">
+                                <label for="departamento" class="block text-gray-700 text-sm font-medium mb-2">Departamento *</label>
+                                <select name="departamento" id="departamento" required
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#F54B64]  focus:border-transparent">
+                                    <option value="">Seleccione un departamento</option>
+                                    {% for departamento in departamentos %}
+                                        <option value="{{ departamento.id }}">{{ departamento.nombre_departamento }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Botones de acción #}
+                    <div class="flex items-center justify-end gap-4 mb-3">
+                        <a href="{% url 'vistaCargos' %}" 
+                            class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2">
+                            Cancelar
+                        </a>
+                        <button type="submit"
+                                class="px-4 py-2 text-sm font-medium text-white bg-[#F54B64] border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2">
+                            Guardar Cargo
+                        </button>
+                    </div>
+                    {# Contacto de ayuda #}
+                    <div class="bg-gray-50 rounded-md p-4">
+                        <h4 class="text-sm font-medium text-gray-700 mb-2">¿Necesita ayuda?</h4>
+                        <p class="text-sm text-gray-600 mb-2">
+                            Si tiene dudas sobre el proceso, contacte al departamento de sistemas:
+                        </p>
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>sistemas@rys.com</span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+{% endblock %}

@@ -17,6 +17,8 @@ def indexManagement(request):
         'cargos': cargos,
     })
 
+# VISTAS DE LA SECTIONS EMPLEADOS
+
 def generar_email(pNombre, pApellido, idempleado):
     return f'{pNombre}_{pApellido}{idempleado[-4:]}@rys.com'
 
@@ -158,6 +160,8 @@ def viewEliminarEmpleado(request, empleado_id):
         'empleado': empleado,
     })
 
+# VISTAS DE LA SECTIONS DEPARTAMENTOS
+
 def viewDepartamentos(request):
     #Obtener la cantidad de empleados y cargos que tiene cada departamento
     departamentos = Departamento.objects.annotate(
@@ -241,7 +245,7 @@ def viewDepartamentos(request):
     return render(request, 'management/sections/departamentos/departamentos.html', context)
 
 #Función para obtener la información de cada departamento, cantidad de empleados y cargos
-def obtenerInforDepartamento(request, departamento_id):
+def obtenerInfoDepartamento(request, departamento_id):
     try:
         departamento = Departamento.objects.get(id=departamento_id)
         cargos = Cargo.objects.filter(departamento=departamento).annotate(
@@ -264,25 +268,23 @@ def obtenerInforDepartamento(request, departamento_id):
         print(f"Error: {str(e)}")
         return JsonResponse({'error': 'Error interno del servidor'}, status=500)
 
-
 def generarReportePDF(request, departamento_id):
     try:
-        # Obtener el departamento y sus datos relacionados
+        #Obtener el departamento y sus datos relacionados
         departamento = get_object_or_404(Departamento, id=departamento_id)
         
-        # Obtener cargos con conteo de empleados
+        #Obtener cargos con conteo de empleados
         cargos = Cargo.objects.filter(departamento=departamento).annotate(
             total_empleados=Count('empleado')
         )
         
-        # Obtener empleados del departamento
+        #Obtener empleados del departamento
         empleados = Empleado.objects.filter(departamento=departamento).select_related('cargo')
         
-        # Calcular totales
+        #Calcular totales
         total_empleados = empleados.count()
         total_cargos = cargos.count()
 
-        # Preparar el contexto
         context = {
             'departamento': departamento,
             'cargos': cargos,
@@ -291,14 +293,14 @@ def generarReportePDF(request, departamento_id):
             'total_cargos': total_cargos
         }
 
-        # Renderizar el template a HTML
+        #Renderizar el template a HTML
         html_string = render_to_string('management/sections/departamentos/informe_departamento.html', context)
 
-        # Crear la respuesta HTTP
+        #Crear la respuesta HTTP
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = f'attachment; filename="Informe_{departamento.nombre_departamento}_{departamento_id}.pdf"'
 
-        # Configurar weasyprint para usar fuentes del sistema
+        #Configurar weasyprint para usar fuentes del sistema
         HTML(string=html_string, base_url=request.build_absolute_uri()).write_pdf(
             response,
             presentational_hints=True
@@ -310,25 +312,89 @@ def generarReportePDF(request, departamento_id):
         print(f"Error generando PDF: {str(e)}")
         return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 
+# VISTAS DE LA SECTIONS CARGOS
+
 def viewCargos(request):
-    cargos = Cargo.objects.all()
-    if request.method == 'POST':
-        cargo = request.POST['cargo']
-        salario = request.POST['salario']
-        departamento_id = request.POST['departamento']
-        departamento = get_object_or_404(Departamento, id=departamento_id)
-        existe = Cargo.objects.filter(cargo=cargo).exists()
-        if existe:
-            msg_error = 'Lo siento, ya existe un cargo con ese nombre. Por favor verifica tu información.'
-            return render(request, 'management/sections/cargos/cargos.html', {
-                'msg_error': msg_error,
-            })
-        Cargo.objects.create(
-            cargo=cargo,
-            salario=salario,
-            departamento=departamento,
-        )
-        return redirect('vistaCargos')
-    return render(request, 'management/sections/cargos/cargos.html', {
+    lista_cargos = Cargo.objects.annotate(
+        total_empleados = Count('empleado', distinct=True)
+    ).order_by('-id')
+
+    paginator = Paginator(lista_cargos, 16) 
+
+    page_number = request.GET.get('page')
+    cargos = paginator.get_page(page_number)
+
+    context = {
         'cargos': cargos,
+    }
+    return render(request, 'management/sections/cargos/cargos.html', context)
+
+def viewCrearCargo(request):
+    departamentos = Departamento.objects.all()
+    context = {
+        'departamentos': departamentos,
+    }
+    if request.method == 'POST':
+        try:
+            nombreCargo = request.POST['nombreCargo'].title()
+            salario = request.POST['salario']
+            departamento_id = request.POST['departamento']
+            departamento = get_object_or_404(Departamento, id=departamento_id)
+            existe = Cargo.objects.filter(cargo=nombreCargo).exists()
+            if existe:
+                context['msg_error'] = 'Lo siento, ese cargo ya existe, intenta con otro'
+                return render(request, 'management/sections/cargos/crear_cargo.html', context)
+
+            try:
+                salario = float(salario)
+            except ValueError:
+                context['msg_error'] = 'Por favor ingresa un valor númerico válido para el salario'
+                return render(request, 'management/sections/cargos/crear_cargo.html', context)
+            
+            Cargo.objects.create(
+                cargo = nombreCargo,
+                salario = salario,
+                departamento = departamento,
+            )
+            return redirect('vistaCargos')
+        
+        except Exception as e:
+            context['msg_error'] = f'Ha ocurrido un error al intentar crear el departamento {str(e)}'
+            return render(request, 'management/sections/cargos/crear_cargo.html', context)
+        
+    return render(request, 'management/sections/cargos/crear_cargo.html', context)
+
+def viewEditarCargo(request, cargo_id):
+    cargo = get_object_or_404(Cargo, id=cargo_id)
+    departamentos = Departamento.objects.all()
+    context = {
+        'departamentos': departamentos,
+        'cargo': cargo,
+    }
+
+    if request.method == 'POST':
+        try:
+            nombreCargo = request.POST['nombreCargo'].title()
+            salario = request.POST['salario']
+            departamento_id = request.POST['departamento']
+            departamento = get_object_or_404(Departamento, id=departamento_id)
+
+            cargo.cargo = nombreCargo
+            cargo.salario = salario
+            cargo.departamento = departamento
+            cargo.save()
+            return redirect('vistaCargos')
+        except Exception as e:
+            context['msg_error'] = f'Error al editar el cargo: {str(e)}'
+        return render(request, 'management/sections/cargos/editar_cargo.html', context)
+
+    return render(request, 'management/sections/cargos/editar_cargo.html', context)
+
+def viewEliminarCargo(request, cargo_id):
+    cargo = get_object_or_404(Cargo, id=cargo_id)
+    if request.method == 'POST':
+        cargo.delete()
+        return redirect('vistaCargos')
+    return render(request, 'management/sections/cargos/eliminar_cargo.html', {
+        'cargo': cargo,
     })
