@@ -31,10 +31,13 @@ function buscarReuniones() {
     });
 }
 
-function buscarAsistencias() {
+function buscarAsistenciasEnTabla() {
     const searchTerm = document.getElementById('search-asistencias').value.toLowerCase();
-    const rows = document.querySelectorAll('#tab-asistencias tbody tr');
-            
+    const tabla = document.querySelector('table');
+    if (!tabla) return;
+
+    const rows = tabla.querySelectorAll('tbody tr');
+    
     rows.forEach(row => {
         const text = row.textContent.toLowerCase();
         row.style.display = text.includes(searchTerm) ? '' : 'none';
@@ -55,6 +58,48 @@ function buscarEmpleados() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Configurar el menú móvil
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            mobileMenu.classList.toggle('flex');
+            mobileMenu.classList.toggle('flex-col');
+        });
+    }
+
+    // Configurar el menú móvil de management
+    const mobileMenuButtonManagement = document.getElementById('mobile-menu-button-management');
+    const mobileMenuManagement = document.getElementById('mobile-menu-management');
+
+    if (mobileMenuButtonManagement && mobileMenuManagement) {
+        mobileMenuButtonManagement.addEventListener('click', () => {
+            mobileMenuManagement.classList.toggle('hidden');
+            mobileMenuManagement.classList.toggle('flex');
+            mobileMenuManagement.classList.toggle('flex-col');
+        });
+    }
+
+    // Configurar búsqueda de cargos
+    const searchCargos = document.getElementById('search-cargos');
+    if (searchCargos) {
+        searchCargos.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const cards = document.querySelectorAll('[data-cargo]');
+
+            cards.forEach(card => {
+                const cargoText = card.getAttribute('data-cargo').toLowerCase();
+                const contenidoCard = card.textContent.toLowerCase();
+                
+                // Busca tanto en el nombre del cargo como en todo el contenido de la tarjeta
+                const coincide = cargoText.includes(searchTerm) || contenidoCard.includes(searchTerm);
+                card.style.display = coincide ? '' : 'none';
+            });
+        });
+    }
+
     //Función para buscar reuniones en la section de Reportes
     const inputBusqueda = document.getElementById('busqueda');
     if(inputBusqueda){
@@ -123,30 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 inputEdicionDepartamento.value = '';
             }
         });
-    }
-
-    // Función para eliminar departamento
-    function eliminarDepartamento(departamentoId) {
-        if (confirm('¿Está seguro que desea eliminar este departamento?')) {
-            fetch(`/management/departamento/${departamentoId}/eliminar/`, {
-                method: 'DELETE',
-                headers: {
-                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    window.location.reload();
-                } else {
-                    alert(data.error || 'Error al eliminar el departamento');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al eliminar el departamento');
-            });
-        }
     }
 
     const btnConsultar = document.getElementById('btn-consultar')

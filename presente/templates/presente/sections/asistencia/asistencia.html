@@ -4,30 +4,30 @@
 {% block title %} Formulario de Asistencia | Presente {% endblock title %}
 
 {% block content %}
-<main class="w-full h-[calc(100dvh-75px)] flex items-center justify-center">
-    <div class="w-[700px] h-[650px] rounded-lg shadow-lg" >
-        <div class="flex flex-col items-center w-full h-full p-5 gap-3">
-            <div class="flex flex-col items-center justify-center mb-4">
-                <h2 class=" text-3xl text-black font-semibold">Formulario de Asistencia</h2>
-                <p class="text-xl text-black font-medium">{{ reunion.titulo }}</p>
+<main class="w-full min-h-[calc(100dvh-75px)] flex items-center justify-center p-4">
+    <div class="w-full max-w-[700px] bg-white rounded-lg shadow-lg" >
+        <div class="flex flex-col items-center w-full h-full p-4 sm:p-5 gap-4 sm:gap-5">
+            <div class="flex flex-col items-center justify-center text-center">
+                <h2 class="text-2xl sm:text-3xl text-black font-semibold mb-2">Formulario de Asistencia</h2>
+                <p class="text-lg sm:text-xl text-black font-medium">{{ reunion.titulo }}</p>
             </div>
-            <div class="w-full flex mb-4">
-                <form action="" method="get" class="flex flex-col min-w-full gap-1.5">
+            <div class="w-full">
+                <form action="" method="get" class="flex flex-col w-full gap-3">
                     {% csrf_token %}
-                    <p class="text-xl font-medium">Ingresa la informacion solicitada en el campo</p>
+                    <p class="text-lg sm:text-xl font-medium">Ingresa la información solicitada en el campo</p>
                     {% if msg_error %}
                     <p class="text-sm font-light text-red-400">{{ msg_error }}</p>
                     {% endif %}
-                    <div class="flex justify-center min-w-full gap-3">
-                        <div class="flex items-center justify-self-start gap-3 w-[70%]">
-                            <label class="text-sm font-medium" for="documento">
+                    <div class="flex flex-col gap-3 w-full">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3 w-full">
+                            <label class="text-sm font-medium whitespace-nowrap" for="documento">
                                 Documento:
                             </label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300 focus:border-[#F54B64]" 
+                            <input class="flex-1 w-full outline-none py-2 px-3 rounded-xl border border-gray-300 focus:border-[#F54B64]" 
                             type="number" name="documento" id="documento" placeholder="Ejemplo: 111558548" required>
                         </div>
-                        <div class="flex flex-1 items-center justify-center">
-                            <button type="submit" id="btn-consultar" class="bg-[#F54B64] py-2 px-6 rounded-xl text-white font-medium text-lg hover:bg-[#ff687f] hover:cursor-pointer transition">
+                        <div class="flex justify-center sm:justify-end w-full">
+                            <button type="submit" id="btn-consultar" class="w-full sm:w-auto bg-[#F54B64] py-2 px-6 rounded-xl text-white font-medium text-base sm:text-lg hover:bg-[#ff687f] hover:cursor-pointer transition shadow-md hover:shadow-lg">
                                 Consultar
                             </button>
                         </div>
@@ -35,51 +35,47 @@
                 </form>
             </div>
             <div class="w-full flex flex-1">
-                <form action="" method="post" class="w-full flex flex-col gap-2">
+                <form action="" method="post" class="w-full flex flex-col gap-4">
                     {% csrf_token %}
-                    <p class="text-xl font-medium">Informacion del usuario</p>
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="flex flex-col justify-center w-[50%] gap-2">
+                    <p class="text-lg sm:text-xl font-medium mb-2">Información del usuario</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+                        <div class="flex flex-col gap-2">
                             <label for="nombres" class="text-sm font-medium">Nombres:</label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300" 
+                            <input class="w-full outline-none py-2 px-3 rounded-xl border border-gray-300" 
                             type="text" name="nombres" id="nombres" readonly>
                         </div>
-                        <div class="flex flex-col justify-center flex-1 gap-2">
+                        <div class="flex flex-col gap-2">
                             <label for="apellidos" class="text-sm font-medium">Apellidos:</label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300" 
+                            <input class="w-full outline-none py-2 px-3 rounded-xl border border-gray-300" 
                             type="text" name="apellidos" id="apellidos" readonly>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="flex flex-col justify-center w-[50%] gap-2">
+                        <div class="flex flex-col gap-2">
                             <label for="email" class="text-sm font-medium">Email:</label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300" 
+                            <input class="w-full outline-none py-2 px-3 rounded-xl border border-gray-300" 
                             type="email" name="email" id="email" readonly>
                         </div>
-                        <div class="flex flex-col justify-center flex-1 gap-2">
-                            <label for="codigo" class="text-sm font-medium">Codigo:</label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300" 
+                        <div class="flex flex-col gap-2">
+                            <label for="codigo" class="text-sm font-medium">Código:</label>
+                            <input class="w-full outline-none py-2 px-3 rounded-xl border border-gray-300" 
                             type="text" name="codigo" id="codigo" readonly>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-2 w-full">
-                        <div class="flex flex-col justify-center w-[50%] gap-2">
+                        <div class="flex flex-col gap-2">
                             <label for="cargo" class="text-sm font-medium">Cargo:</label>
-                            <input class="outline-none py-1.5 px-3 rounded-xl border-1 border-gray-300"
+                            <input class="w-full outline-none py-2 px-3 rounded-xl border border-gray-300"
                             type="text" name="cargo" id="cargo" readonly>
                             <input type="hidden" name="cargo_id" id="cargo_id" readonly>
                             <input type="hidden" name="documento-post" id="documento-post" readonly>
                         </div>
-                        <div class="flex items-center justify-center flex-1 mt-6">
-                            <button type="submit" id="btn-confirmar" hidden class="bg-[#F54B64] py-2 px-6 rounded-xl text-white font-medium text-lg hover:bg-[#ff687f] transition disabled:bg-gray-400 disabled:cursor-not-allowed">
+                        <div class="flex items-center justify-center sm:justify-end">
+                            <button type="submit" id="btn-confirmar" hidden class="w-full sm:w-auto bg-[#F54B64] py-2 px-6 rounded-xl text-white font-medium text-base sm:text-lg hover:bg-[#ff687f] transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md hover:shadow-lg">
                                 Confirmar Asistencia
                             </button>
                         </div>
                     </div>
                 </form>
             </div>
-            <div class="w-full h-[55px] flex items-center">
-                <p class="text-justify text-sm"><strong>Nota:</strong> En caso de no ser miembro de la empresa, le solicitamos ingresar el número de invitado que le fue asignado.</p>
+            <div class="w-full">
+                <p class="text-sm text-gray-600"><strong>Nota:</strong> En caso de no ser miembro de la empresa, le solicitamos ingresar el número de invitado que le fue asignado.</p>
             </div>
         </div>
     </div>

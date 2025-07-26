@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
 from weasyprint import HTML
 from django.conf import settings
 import tempfile
@@ -10,6 +11,7 @@ from django.http import JsonResponse, HttpResponse
 from .models import Departamento, Cargo, Empleado
 
 # Create your views here.
+@login_required
 def indexManagement(request):
     departamentos = Departamento.objects.all()
     cargos = Cargo.objects.all()
@@ -28,6 +30,7 @@ def generar_codigo(pNombre, idempleado):
     idemp = idempleado[-4:]
     return f'@{nombre}{idemp}'
 
+@login_required
 def viewEmpleados(request):
     lista_empleados = Empleado.objects.all().order_by('-id')
     paginator = Paginator(lista_empleados, 15) 
@@ -38,6 +41,7 @@ def viewEmpleados(request):
         'empleados': empleados,
     })
 
+@login_required
 def viewCrearEmpleado(request):
     departamentos = Departamento.objects.all()
     cargos = Cargo.objects.all()
@@ -85,6 +89,7 @@ def viewCrearEmpleado(request):
 
     return render(request, 'management/sections/empleados/crear_empleado.html', context)
 
+@login_required
 def viewInfoEmpleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
 
@@ -95,6 +100,7 @@ def viewInfoEmpleado(request, empleado_id):
         'empleado': empleado,
     })
 
+@login_required
 def viewEditarEmpleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
     departamentos = Departamento.objects.all()
@@ -152,6 +158,7 @@ def viewEditarEmpleado(request, empleado_id):
             context['msg_error'] = f'Error al editar el empleado: {str(e)}'
     return render(request, 'management/sections/empleados/editar_empleado.html', context)
 
+@login_required
 def viewEliminarEmpleado(request, empleado_id):
     empleado = get_object_or_404(Empleado, id=empleado_id)
     if request.method == 'POST':
@@ -162,7 +169,7 @@ def viewEliminarEmpleado(request, empleado_id):
     })
 
 # VISTAS DE LA SECTIONS DEPARTAMENTOS
-
+@login_required
 def viewDepartamentos(request):
     #Obtener la cantidad de empleados y cargos que tiene cada departamento
     departamentos = Departamento.objects.annotate(
@@ -246,6 +253,7 @@ def viewDepartamentos(request):
     return render(request, 'management/sections/departamentos/departamentos.html', context)
 
 #Función para obtener la información de cada departamento, cantidad de empleados y cargos
+@login_required
 def obtenerInfoDepartamento(request, departamento_id):
     try:
         departamento = Departamento.objects.get(id=departamento_id)
@@ -269,6 +277,7 @@ def obtenerInfoDepartamento(request, departamento_id):
         print(f"Error: {str(e)}")
         return JsonResponse({'error': 'Error interno del servidor'}, status=500)
 
+@login_required
 def generarReportePDF(request, departamento_id):
     try:
         #Obtener el departamento y sus datos relacionados
@@ -314,7 +323,7 @@ def generarReportePDF(request, departamento_id):
         return HttpResponse(f"Error generando el PDF: {str(e)}", status=500)
 
 # VISTAS DE LA SECTIONS CARGOS
-
+@login_required
 def viewCargos(request):
     lista_cargos = Cargo.objects.annotate(
         total_empleados = Count('empleado', distinct=True)
@@ -330,6 +339,7 @@ def viewCargos(request):
     }
     return render(request, 'management/sections/cargos/cargos.html', context)
 
+@login_required
 def viewCrearCargo(request):
     departamentos = Departamento.objects.all()
     context = {
@@ -365,6 +375,7 @@ def viewCrearCargo(request):
         
     return render(request, 'management/sections/cargos/crear_cargo.html', context)
 
+@login_required
 def viewEditarCargo(request, cargo_id):
     cargo = get_object_or_404(Cargo, id=cargo_id)
     departamentos = Departamento.objects.all()
@@ -391,6 +402,7 @@ def viewEditarCargo(request, cargo_id):
 
     return render(request, 'management/sections/cargos/editar_cargo.html', context)
 
+@login_required
 def viewEliminarCargo(request, cargo_id):
     cargo = get_object_or_404(Cargo, id=cargo_id)
     if request.method == 'POST':
@@ -400,6 +412,7 @@ def viewEliminarCargo(request, cargo_id):
         'cargo': cargo,
     })
 
+@login_required
 def generarReporteCargoPDF(request, cargo_id):
     try:
         # Obtener el cargo y sus datos relacionados

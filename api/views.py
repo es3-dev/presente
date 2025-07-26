@@ -10,6 +10,14 @@ class EmpleadoViewSet(viewsets.ModelViewSet):
     serializer_class = EmpleadoSerializer
     lookup_field = 'documento'
 
+class DepartamentoViewSet(viewsets.ModelViewSet):
+    queryset = Departamento.objects.all()
+    serializer_class = DepartamentoSerializer
+
+class CargoViewSet(viewsets.ModelViewSet):
+    queryset = Cargo.objects.all()
+    serializer_class = CargoSerializer
+
 class ReunionViewSet(viewsets.ModelViewSet):
     queryset = Reunion.objects.all()
     serializer_class = ReunionSerializer

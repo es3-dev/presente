@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from weasyprint import HTML
 from django.conf import settings
@@ -10,11 +12,35 @@ from .models import Reunion, Asistencia
 from management.models import Departamento, Cargo
 
 # Create your views here.
+def presente_login(request):
+    if request.method == 'POST':
+        username = request.POST['usuario']
+        password = request.POST['contraseña']
+
+        usuario = authenticate(request, username=username, password=password)
+        if usuario is not None:
+            login(request, usuario)  # Iniciar sesión
+            return redirect('vistaIndexPresente')
+        else:
+            return render(request, 'admin/presente_login.html', {
+                'msg_error': 'Lo siento, el usuario o contraseña no son correctos',
+                'tipo_header': 'presenteSimple'
+            })
+    return render(request, 'admin/presente_login.html', {
+        'tipo_header': 'presenteSimple'
+    })
+
+def presente_logout(request):
+    logout(request)
+    return redirect('login')
+
+@login_required
 def viewIndexPresente(request):
     return render(request, 'presente/index.html', {
         'tipo_header': 'presenteCompleto',
         })
 
+@login_required
 def viewCrearReunion(request):
     departamentos = Departamento.objects.all()
 
@@ -46,6 +72,7 @@ def viewCrearReunion(request):
         'tipo_header': 'presenteCompleto',
         })
 
+@login_required
 def viewMostrarDetalleReunion(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     asistencias_list = Asistencia.objects.filter(reunion=reunion)
@@ -94,6 +121,7 @@ def asistenciaRegistrada(request):
         'tipo_header': 'presenteSimple',
         })
 
+@login_required
 def viewReportes(request):
     reuniones = Reunion.objects.all()
     return render(request, 'presente/sections/reportes/reportes.html', {
@@ -101,6 +129,7 @@ def viewReportes(request):
         'reuniones': reuniones,
     })
 
+@login_required
 def generarReportePDF(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     asistencias = Asistencia.objects.filter(reunion=reunion)
@@ -121,6 +150,7 @@ def generarReportePDF(request, reunion_id):
     return response
 
 # Vistas de Administración de Reuniones y Asistencias
+@login_required
 def viewAdministracionRyA(request):
     reuniones = Reunion.objects.all().order_by('-fecha')
     asistencias = Asistencia.objects.all()
@@ -132,6 +162,7 @@ def viewAdministracionRyA(request):
     
     return render(request, 'presente/sections/administracion/administracion_rya.html', context)
 
+@login_required
 def viewEditarReunion(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     departamentos = Departamento.objects.all()
@@ -168,6 +199,7 @@ def viewEditarReunion(request, reunion_id):
 
     return render(request, 'presente/sections/administracion/editar_reunion.html', context)
 
+@login_required
 def viewEliminarReunion(request, reunion_id):
     reunion = get_object_or_404(Reunion, id=reunion_id)
     
@@ -194,6 +226,7 @@ def viewEliminarReunion(request, reunion_id):
         'reunion': reunion
     })
 
+@login_required
 def viewEliminarAsistencia(request, asistencia_id):
     if request.method == 'POST':
         asistencia = get_object_or_404(Asistencia, id=asistencia_id)
